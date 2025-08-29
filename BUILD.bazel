@@ -1,0 +1,84 @@
+load("@rules_python//python:defs.bzl", "py_library", "py_binary", "py_test")
+load("@rules_python//python:pip.bzl", "compile_pip_requirements")
+
+compile_pip_requirements(
+    name = "requirements",
+    src = "requirements.txt",
+    requirements_txt = "requirements_lock_3_12.txt",
+)
+
+load(':utils.bzl', 'get_pattern')
+ 
+
+py_library(
+    name = "odoo_lib",
+    srcs = glob(["addons/**/*.py", 'odoo/**/*.py', 'custom_addons/**/*.py'], allow_empty=False),
+    deps = [
+       "@py_deps//asn1crypto",
+        "@py_deps//babel",
+        "@py_deps//cbor2",
+        "@py_deps//chardet",
+        "@py_deps//cryptography",
+        "@py_deps//decorator",
+        "@py_deps//docutils",
+        "@py_deps//freezegun",
+        "@py_deps//geoip2",
+        "@py_deps//gevent",
+        "@py_deps//greenlet",
+        "@py_deps//idna",
+        "@py_deps//jinja2",
+        "@py_deps//libsass",
+        "@py_deps//lxml",
+        "@py_deps//lxml_html_clean",
+        "@py_deps//markupsafe",
+        "@py_deps//ofxparse",
+        "@py_deps//openpyxl",
+        "@py_deps//passlib",
+        "@py_deps//pillow",
+        "@py_deps//polib",
+        "@py_deps//psutil",
+        "@py_deps//psycopg2",
+        "@py_deps//pyopenssl",
+        "@py_deps//pypdf2",
+         
+        "@py_deps//pyserial",
+        "@py_deps//python_dateutil",
+        "@py_deps//python_ldap",
+        "@py_deps//python_stdnum",
+        "@py_deps//pytz",
+        "@py_deps//pyusb",
+        "@py_deps//qrcode",
+        "@py_deps//reportlab",
+        "@py_deps//requests",
+        "@py_deps//rjsmin",
+        # "@py_deps//rl_renderPM",
+        "@py_deps//urllib3",
+        "@py_deps//vobject",
+        "@py_deps//werkzeug",
+        "@py_deps//xlrd",
+        "@py_deps//xlsxwriter",
+        "@py_deps//xlwt",
+        "@py_deps//zeep",
+
+    ],
+    data = glob(get_pattern('addons') + get_pattern('odoo') + get_pattern('custom_addons'), allow_empty=True),
+
+   imports = ['.'],
+)
+
+py_binary(
+    name = "odoo-bin",
+    data = ['odoo.conf' ],
+    srcs = ["odoo-bin.py"],
+    deps = [
+        ":odoo_lib",
+        
+    ],
+    args  = [
+        'gevent',
+        '-c odoo.conf',
+    ]
+)
+
+
+
